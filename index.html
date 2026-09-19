@@ -1,1 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D4H Data Analysis Project — Training of Trainers | Istanbul, March 2027</title>
+<style>
+:root{
+  --navy:#1B3157; --navy2:#122340; --teal:#0E7C86; --teal-light:#E6F4F4;
+  --gold:#C98A2C; --ink:#1B2430; --muted:#5B6675; --bg:#F5F7F9; --card:#FFFFFF; --border:#E1E6EC;
+}
+*{box-sizing:border-box;}
+body{margin:0; font-family:Calibri, Arial, "Segoe UI", sans-serif; background:var(--bg); color:var(--ink); line-height:1.55;}
+h1,h2,h3,h4{font-family:Cambria,"Times New Roman",serif; color:var(--navy); margin-top:0;}
+a{color:var(--teal);}
 
+header.top{
+  background:linear-gradient(135deg, var(--navy2) 0%, var(--navy) 100%);
+  color:#fff; padding:26px 6% 22px 6%;
+}
+header.top .kicker{ text-transform:uppercase; letter-spacing:1.5px; font-size:12px; color:#8FD3D8; font-weight:700; }
+header.top h1{ color:#fff; font-size:26px; margin:6px 0 4px 0; }
+header.top .sub{ color:#C9D6E6; font-size:14px; }
+
+nav.tabs{
+  display:flex; gap:2px; background:var(--navy2); padding:0 6%; overflow-x:auto;
+  position:sticky; top:0; z-index:20;
+}
+nav.tabs button{
+  background:none; border:none; color:#B9C8DC; padding:14px 20px; font-size:14.5px; font-weight:700;
+  cursor:pointer; border-bottom:3px solid transparent; font-family:Calibri,Arial,sans-serif; white-space:nowrap;
+}
+nav.tabs button:hover{ color:#fff; }
+nav.tabs button.active{ color:#fff; border-bottom:3px solid var(--gold); }
+
+main{ max-width:1100px; margin:0 auto; padding:34px 6% 70px 6%; }
+.panel{ display:none; }
+.panel.active{ display:block; }
+
+.box{ background:var(--card); border:1px solid var(--border); border-radius:10px; padding:20px 24px; margin-bottom:18px; }
+.box h3{ font-size:17px; margin-bottom:10px; }
+.box ul{ margin:6px 0 0 0; padding-left:20px; }
+.box li{ margin-bottom:6px; font-size:14.5px; }
+.box p{ font-size:14.5px; margin:6px 0; }
+
+.grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+.grid-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+
+.stat-row{ display:flex; gap:14px; flex-wrap:wrap; margin:6px 0 22px 0; }
+.stat{ background:#fff; border:1px solid var(--border); border-radius:8px; padding:14px 18px; min-width:130px; flex:1; }
+.stat .num{ font-size:22px; font-weight:800; color:var(--navy); }
+.stat .lbl{ font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.4px; }
+
+table{ border-collapse:collapse; width:100%; margin:8px 0; font-size:13px; }
+th,td{ border:1px solid var(--border); padding:8px 9px; text-align:left; vertical-align:top; }
+th{ background:var(--teal-light); color:var(--navy2); font-size:12px; }
+.agenda-table td.time{ font-weight:700; color:var(--teal); white-space:nowrap; }
+.agenda-table tr.tea td{ background:#FBF6EC; font-style:italic; color:var(--muted); }
+
+.day-head{
+  background:linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%); color:#fff;
+  padding:12px 18px; border-radius:8px 8px 0 0; font-weight:700; font-size:16px; margin-top:26px;
+}
+.day-table{ border:1px solid var(--border); border-top:none; border-radius:0 0 8px 8px; overflow:hidden; }
+.day-table table{ margin:0; }
+
+.pill{ display:inline-block; background:var(--teal-light); color:var(--navy2); font-size:11.5px; font-weight:700; padding:4px 10px; border-radius:14px; border:1px solid #CFE7E8; margin:3px 4px 3px 0; }
+
+.facil-card{ background:#fff; border:1px solid var(--border); border-radius:10px; padding:22px; text-align:center; }
+.facil-photo{ width:96px; height:96px; border-radius:50%; background:var(--teal-light); margin:0 auto 14px auto; display:flex; align-items:center; justify-content:center; font-size:30px; color:var(--teal); font-weight:800; }
+.facil-card h4{ margin:0 0 2px 0; font-size:16px; color:var(--navy); }
+.facil-card .role{ font-size:12.5px; color:var(--gold); font-weight:700; text-transform:uppercase; letter-spacing:.4px; margin-bottom:10px; }
+.facil-card p{ font-size:13.5px; color:var(--muted); text-align:left; }
+.editable-note{ background:#FFF8E6; border:1px dashed var(--gold); border-radius:8px; padding:10px 14px; font-size:12.5px; color:#7a5a10; margin-bottom:20px; }
+
+.material-cat{ margin-top:24px; }
+.material-cat h3{ display:flex; align-items:center; gap:10px; }
+.file-row{ display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border:1px solid var(--border); border-radius:8px; margin-bottom:8px; background:#fff; }
+.file-row .fname{ font-weight:700; font-size:13.5px; color:var(--navy2); }
+.file-row .fdesc{ font-size:12.5px; color:var(--muted); }
+.file-tag{ font-size:11px; font-weight:700; padding:3px 9px; border-radius:12px; white-space:nowrap; margin-left:14px; }
+.tag-ppt{ background:#FDEFE0; color:#A85B00; }
+.tag-xls{ background:#E6F4E9; color:#1E7A3B; }
+.tag-doc{ background:#E6ECFB; color:#2A4FA0; }
+
+.logi-row{ display:flex; gap:16px; margin-bottom:14px; align-items:flex-start; }
+.logi-icon{ width:38px; height:38px; border-radius:8px; background:var(--teal); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; flex-shrink:0; }
+
+@media (max-width:800px){
+  .grid-2, .grid-3{ grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="kicker">CDC Foundation · Data for Health (D4H) Initiative</div>
+  <h1>Data Analysis and Report Writing Project — Training of Trainers</h1>
+  <div class="sub">Sheraton Istanbul City Center · March 29 – April 2, 2027 · Bangladesh · Côte d'Ivoire · Rwanda · Tanzania</div>
+</header>
+
+<nav class="tabs">
+  <button class="tab-btn active" data-tab="index">Index</button>
+  <button class="tab-btn" data-tab="agenda">Agenda</button>
+  <button class="tab-btn" data-tab="facilitators">Facilitators</button>
+  <button class="tab-btn" data-tab="materials">Materials</button>
+  <button class="tab-btn" data-tab="logistics">Logistics</button>
+</nav>
+
+<main>
+
+  <!-- ================= INDEX ================= -->
+  <section class="panel active" id="index">
+    <h2>Welcome</h2>
+    <p>This site is the single reference point for the Training of Trainers (TOT) week: the day-by-day agenda, facilitator contacts, every downloadable training resource, and on-the-ground logistics for Istanbul. Use the tabs above to navigate.</p>
+
+    <div class="stat-row">
+      <div class="stat"><div class="num">5</div><div class="lbl">Training Days</div></div>
+      <div class="stat"><div class="num">4</div><div class="lbl">Pilot Countries</div></div>
+      <div class="stat"><div class="num">3</div><div class="lbl">Facilitators</div></div>
+      <div class="stat"><div class="num">13</div><div class="lbl">Resource Files</div></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="box">
+        <h3>Project Principles</h3>
+        <ul>
+          <li>Outputs published via government platforms (e.g., national public health bulletins) or used to inform policy/decision-making.</li>
+          <li>Government partners identify the questions that need answering.</li>
+          <li>Focus on descriptive analytics using Excel.</li>
+          <li>Introduce health equity — analysis by sex, location, and sociodemographic variables.</li>
+          <li>Government agencies retain data ownership and approve publication.</li>
+          <li>Establish SOPs for institutionalization: templates, data dictionaries, documented data-access processes.</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h3>Project Goal</h3>
+        <p>Strengthen the analytical and reporting capacity of government agencies and partners to improve the quality, consistency, and dissemination of public health surveillance and mortality data, including CRVS data when available and relevant.</p>
+        <h3 style="margin-top:14px;">Why a Training of Trainers Model</h3>
+        <p>This TOT builds a cadre of national trainers who can independently replicate and adapt the workshop model — reducing long-term dependence on external facilitation and sustaining the project's impact after this week.</p>
+      </div>
+    </div>
+
+    <div class="box">
+      <h3>Project Objectives</h3>
+      <ul>
+        <li>Train participants to access, clean, analyze, and communicate surveillance and mortality data.</li>
+        <li>Train participants to access and use census data to calculate rates.</li>
+        <li>Establish best practices and document SOPs for accessing surveillance and mortality data.</li>
+        <li>Introduce best practices in data visualization (tables, figures, and maps).</li>
+        <li>Emphasize equity — gender, socioeconomic status, and location — in policy proposals and communication products.</li>
+        <li>Develop templates for reporting on priority diseases and conditions.</li>
+        <li>Establish a monitoring and evaluation framework tracking competency gains, output quality, and post-training data use.</li>
+        <li>Build a cadre of in-country trainers who can independently sustain and scale these practices.</li>
+      </ul>
+    </div>
+
+    <div class="box">
+      <h3>The Seven Project Phases</h3>
+      <p>This TOT is Phase 1 of a seven-phase project. Phases 2–6 follow after this week: government agencies identify topics/teams/data access; participants explore data and set objectives virtually; participants write reports in a 4-day in-person workshop; participants finalize and disseminate reports with mentor support; and participants reproduce regular reports on an ongoing cadence — the true measure of institutionalization.</p>
+    </div>
+  </section>
+
+  <!-- ================= AGENDA ================= -->
+  <section class="panel" id="agenda">
+    <h2>Full Training Agenda</h2>
+    <p>Monday through Friday, 9:00 AM–5:00 PM daily, with a 30-minute tea break at 10:30 and a one-hour lunch break at 13:00. All times below are as scheduled; facilitators may adjust slightly on the day.</p>
+
+    <div class="day-head">Monday, March 29</div>
+    <div class="day-table"><table class="agenda-table">
+      <tr><th style="width:110px;">Time</th><th>Session</th></tr>
+      <tr><td class="time">9:00–9:30</td><td>Welcome and introductions</td></tr>
+      <tr><td class="time">9:30–10:00</td><td>Introduction to the Data for Health Initiative Data Analysis Project</td></tr>
+      <tr><td class="time">10:00–10:30</td><td>Review the TOT schedule and team project</td></tr>
+      <tr class="tea"><td class="time">10:30–11:00</td><td>Tea Break</td></tr>
+      <tr><td class="time">11:00–11:30</td><td>Principles of Equity</td></tr>
+      <tr><td class="time">11:30–12:30</td><td>Group Projects: Country teams report on SOPs and challenges accessing data</td></tr>
+      <tr class="tea"><td class="time">13:00–13:30</td><td>Lunch</td></tr>
+      <tr><td class="time">13:30–14:30</td><td>Establish data analysis objectives</td></tr>
+      <tr><td class="time">14:30–15:30</td><td>Cleaning data in Excel</td></tr>
+      <tr><td class="time">16:00–16:30</td><td>Combining data sets in Excel</td></tr>
+      <tr><td class="time">16:30–17:00</td><td>Teams analyze data</td></tr>
+    </table></div>
+
+    <div class="day-head">Tuesday, March 30</div>
+    <div class="day-table"><table class="agenda-table">
+      <tr><th style="width:110px;">Time</th><th>Session</th></tr>
+      <tr><td class="time">9:00–9:30</td><td>Day 1 debrief</td></tr>
+      <tr><td class="time">9:30–10:00</td><td>Training Methodologies</td></tr>
+      <tr class="tea"><td class="time">10:30–11:00</td><td>Tea Break</td></tr>
+      <tr><td class="time">11:00–11:30</td><td>Accessing and using census data to calculate rates in Excel</td></tr>
+      <tr><td class="time">12:00–12:30</td><td>Descriptive statistics review</td></tr>
+      <tr class="tea"><td class="time">13:00–13:30</td><td>Lunch</td></tr>
+      <tr><td class="time">14:00–14:30</td><td>Descriptive statistics using Excel</td></tr>
+      <tr><td class="time">15:00–15:30</td><td>Data analysis using pivot tables</td></tr>
+      <tr><td class="time">16:00–17:00</td><td>Teams analyze data</td></tr>
+    </table></div>
+
+    <div class="day-head">Wednesday, March 31</div>
+    <div class="day-table"><table class="agenda-table">
+      <tr><th style="width:110px;">Time</th><th>Session</th></tr>
+      <tr><td class="time">9:00–9:30</td><td>Day 2 debrief</td></tr>
+      <tr><td class="time">9:30–10:00</td><td>IMRAD Structure</td></tr>
+      <tr class="tea"><td class="time">10:30–11:00</td><td>Tea Break</td></tr>
+      <tr><td class="time">11:00–12:00</td><td>Best practices for creating tables</td></tr>
+      <tr><td class="time">12:00–12:30</td><td>Tables exercise</td></tr>
+      <tr class="tea"><td class="time">13:00–13:30</td><td>Lunch</td></tr>
+      <tr><td class="time">14:00–14:30</td><td>Best practices for creating figures</td></tr>
+      <tr><td class="time">15:00–15:30</td><td>Figures exercise</td></tr>
+      <tr><td class="time">16:00–16:30</td><td>Creating maps in Excel</td></tr>
+    </table></div>
+
+    <div class="day-head">Thursday, April 1</div>
+    <div class="day-table"><table class="agenda-table">
+      <tr><th style="width:110px;">Time</th><th>Session</th></tr>
+      <tr><td class="time">9:00–9:30</td><td>Day 3 debrief</td></tr>
+      <tr><td class="time">9:30–10:00</td><td>Guidelines for creating report templates</td></tr>
+      <tr class="tea"><td class="time">10:30–11:00</td><td>Tea Break</td></tr>
+      <tr><td class="time">11:00–11:30</td><td>Drafting appropriate recommendations</td></tr>
+      <tr><td class="time">12:00–13:00</td><td>Check in on the progress of group projects</td></tr>
+      <tr class="tea"><td class="time">13:00–13:30</td><td>Lunch</td></tr>
+      <tr><td class="time">14:00–14:30</td><td>Training Methodologies (part 2)</td></tr>
+      <tr><td class="time">14:30–16:30</td><td>Teams continue working on group projects</td></tr>
+    </table></div>
+
+    <div class="day-head">Friday, April 2</div>
+    <div class="day-table"><table class="agenda-table">
+      <tr><th style="width:110px;">Time</th><th>Session</th></tr>
+      <tr><td class="time">9:00–9:30</td><td>Day 4 debrief</td></tr>
+      <tr><td class="time">9:30–12:30</td><td>Group report presentations</td></tr>
+      <tr class="tea"><td class="time">13:00–13:30</td><td>Lunch</td></tr>
+      <tr><td class="time">14:00–15:00</td><td>Group report presentations (continued)</td></tr>
+      <tr><td class="time">15:30–16:00</td><td>Guidelines for creating report templates — wrap-up &amp; certification</td></tr>
+      <tr><td class="time">16:00–16:30</td><td>Workshop evaluation and wrap-up</td></tr>
+    </table></div>
+
+    <div class="box" style="margin-top:26px;">
+      <h3>Pre-TOT Deliverables (due before Monday, March 29)</h3>
+      <ul>
+        <li>Identify sources of data.</li>
+        <li>For each source, document: department/institution collecting it; timeliness and quality; goals of collecting it; types of reports generated; data dictionaries; process for accessing it; challenges accessing it.</li>
+        <li>A dataset on your priority disease or condition for the past five years, by district and by sex — see <em>Priority_Disease_5yr_District_Sex_Template.xlsx</em> in Materials.</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>Post-TOT Deliverables</h3>
+      <ul>
+        <li>Country-specific data analysis project plan.</li>
+        <li>Recommendations for revising workshop materials.</li>
+        <li>Final project report submitted for publication to the public health bulletin.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================= FACILITATORS ================= -->
+  <section class="panel" id="facilitators">
+    <h2>Facilitators</h2>
+    <div class="editable-note">Facilitator names, roles, and bios below are placeholders — this section was not supplied with real facilitator details. Replace the three cards with actual names, titles, and short bios before publishing this site externally.</div>
+
+    <div class="grid-3">
+      <div class="facil-card">
+        <div class="facil-photo">F1</div>
+        <h4>[Facilitator 1 Name]</h4>
+        <div class="role">Lead Facilitator — Data Analysis</div>
+        <p>[Short bio: role at CDC Foundation, background in public health surveillance / data analytics, prior TOT experience.]</p>
+        <p><strong>Leads:</strong> Excel skills (cleaning, PivotTables, rates), descriptive statistics.</p>
+        <p><strong>Contact:</strong> [email] · [phone]</p>
+      </div>
+      <div class="facil-card">
+        <div class="facil-photo">F2</div>
+        <h4>[Facilitator 2 Name]</h4>
+        <div class="role">Lead Facilitator — Scientific Writing</div>
+        <p>[Short bio: role at CDC Foundation, background in scientific writing / public health communication.]</p>
+        <p><strong>Leads:</strong> IMRAD structure, tables/figures/maps, report drafting.</p>
+        <p><strong>Contact:</strong> [email] · [phone]</p>
+      </div>
+      <div class="facil-card">
+        <div class="facil-photo">F3</div>
+        <h4>[Facilitator 3 Name]</h4>
+        <div class="role">Facilitator — Training Methodologies &amp; Equity</div>
+        <p>[Short bio: role at CDC Foundation, background in adult learning / health equity.]</p>
+        <p><strong>Leads:</strong> Principles of equity, training methodologies, group project mentoring.</p>
+        <p><strong>Contact:</strong> [email] · [phone]</p>
+      </div>
+    </div>
+
+    <div class="box" style="margin-top:20px;">
+      <h3>Facilitator Coverage by Session</h3>
+      <table>
+        <tr><th>Topic Area</th><th>Primary Facilitator</th><th>Sessions</th></tr>
+        <tr><td>Excel: cleaning, rates, PivotTables, descriptive statistics</td><td>[Facilitator 1]</td><td>Mon 14:30, Tue 11:00–15:30</td></tr>
+        <tr><td>Scientific writing: IMRAD, tables, figures, maps, recommendations</td><td>[Facilitator 2]</td><td>Wed all day, Thu 9:30–11:30</td></tr>
+        <tr><td>Equity, training methodologies, group project coaching</td><td>[Facilitator 3]</td><td>Mon 11:00, Tue 9:30, Thu 14:00, all group-project check-ins</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= MATERIALS ================= -->
+  <section class="panel" id="materials">
+    <h2>Training Materials</h2>
+    <p>All files below are provided as real, downloadable resources alongside this site (delivered as a single resource package: <em>D4H_TOT_Resource_Package</em>, organized into the three folders shown here). Every Excel workbook contains live formulas — edit any input and the workbook recalculates. Every Word template is ready to fill in directly.</p>
+
+    <div class="material-cat">
+      <h3>📊 PowerPoint Decks <span class="pill">01_PowerPoint_Decks</span></h3>
+      <div class="file-row"><div><div class="fname">TOT_Day1_Monday.pptx</div><div class="fdesc">Project introduction, equity principles, cleaning &amp; combining data in Excel.</div></div><span class="file-tag tag-ppt">.pptx</span></div>
+      <div class="file-row"><div><div class="fname">TOT_Day2_Tuesday.pptx</div><div class="fdesc">Census-based rates, descriptive statistics, PivotTables.</div></div><span class="file-tag tag-ppt">.pptx</span></div>
+      <div class="file-row"><div><div class="fname">TOT_Day3_Wednesday.pptx</div><div class="fdesc">IMRAD structure, tables, figures, and maps in Excel.</div></div><span class="file-tag tag-ppt">.pptx</span></div>
+      <div class="file-row"><div><div class="fname">TOT_Day4_Thursday.pptx</div><div class="fdesc">Report templates, recommendations, training methodologies, group project time.</div></div><span class="file-tag tag-ppt">.pptx</span></div>
+      <div class="file-row"><div><div class="fname">TOT_Day5_Friday.pptx</div><div class="fdesc">Presentation guidance, certification, workshop evaluation.</div></div><span class="file-tag tag-ppt">.pptx</span></div>
+    </div>
+
+    <div class="material-cat">
+      <h3>📈 Excel Practice Workbooks <span class="pill">02_Excel_Workbooks</span></h3>
+      <div class="file-row"><div><div class="fname">Mortality_Linelist_Practice.xlsx</div><div class="fdesc">300-record simulated line list + live descriptive-statistics and frequency-table formulas.</div></div><span class="file-tag tag-xls">.xlsx</span></div>
+      <div class="file-row"><div><div class="fname">Data_Cleaning_Practice.xlsx</div><div class="fdesc">Deliberately dirty dataset (duplicates, spelling variants, blanks, invalid ages) with a live cleaning-formula answer key.</div></div><span class="file-tag tag-xls">.xlsx</span></div>
+      <div class="file-row"><div><div class="fname">Rates_and_Census_Practice.xlsx</div><div class="fdesc">Event counts + census population tables joined with INDEX/MATCH, inter-censal growth, and rate calculation.</div></div><span class="file-tag tag-xls">.xlsx</span></div>
+      <div class="file-row"><div><div class="fname">Priority_Disease_5yr_District_Sex_Template.xlsx</div><div class="fdesc">Fill-in template for the Pre-TOT deliverable 3 dataset, plus a matching data dictionary tab.</div></div><span class="file-tag tag-xls">.xlsx</span></div>
+    </div>
+
+    <div class="material-cat">
+      <h3>📄 Word Templates &amp; Guides <span class="pill">03_Word_Templates_and_Guides</span></h3>
+      <div class="file-row"><div><div class="fname">TOT_Facilitator_Guide_and_Lecture_Notes.docx</div><div class="fdesc">Full week's lecture notes, facilitator tips, and materials references for every timetabled session.</div></div><span class="file-tag tag-doc">.docx</span></div>
+      <div class="file-row"><div><div class="fname">SOP_and_Data_Dictionary_Templates.docx</div><div class="fdesc">Fill-in Standard Operating Procedure for data access, plus a general-purpose data dictionary table.</div></div><span class="file-tag tag-doc">.docx</span></div>
+      <div class="file-row"><div><div class="fname">Report_Template_IMRAD.docx</div><div class="fdesc">The IMRAD-structured report template participants populate Wednesday–Friday.</div></div><span class="file-tag tag-doc">.docx</span></div>
+      <div class="file-row"><div><div class="fname">Pre_and_Post_TOT_Deliverables_Checklist.docx</div><div class="fdesc">Checklist covering every Pre-TOT and Post-TOT deliverable, with sign-off fields.</div></div><span class="file-tag tag-doc">.docx</span></div>
+    </div>
+  </section>
+
+  <!-- ================= LOGISTICS ================= -->
+  <section class="panel" id="logistics">
+    <h2>Logistics</h2>
+
+    <div class="box">
+      <h3>Venue &amp; Dates</h3>
+      <div class="logi-row"><div class="logi-icon">📍</div><div><strong>Sheraton Istanbul City Center</strong><br>Istanbul, Türkiye<br><span style="color:var(--muted); font-size:13px;">[Full street address — to be confirmed with hotel booking]</span></div></div>
+      <div class="logi-row"><div class="logi-icon">📅</div><div><strong>Monday, March 29 – Friday, April 2, 2027</strong><br><span style="color:var(--muted); font-size:13px;">Daily 9:00 AM – 5:00 PM (tea break 10:30, lunch 13:00)</span></div></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="box">
+        <h3>Accommodation</h3>
+        <p>[Placeholder: room block details, check-in/check-out dates, booking code, and deadline to be confirmed with the Sheraton Istanbul City Center.]</p>
+        <p><strong>Check-in:</strong> [date] &nbsp; <strong>Check-out:</strong> [date]</p>
+      </div>
+      <div class="box">
+        <h3>Travel &amp; Visas</h3>
+        <p>[Placeholder: nearest airport (Istanbul Airport, IST), recommended transfer options, and visa guidance for Bangladesh, Côte d'Ivoire, Rwanda, and Tanzania delegations.]</p>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="box">
+        <h3>Meals</h3>
+        <p>Tea break (10:30) and lunch (13:00) are provided daily at the venue. [Placeholder: dietary accommodation process and any group dinner plans.]</p>
+      </div>
+      <div class="box">
+        <h3>What to Bring</h3>
+        <ul>
+          <li>Laptop with Excel 2016 or later installed.</li>
+          <li>Completed Pre-TOT deliverables (see Agenda tab).</li>
+          <li>Country team's five-year priority-topic dataset, loaded on each team member's laptop.</li>
+          <li>Laptop charger and a universal power adapter (Türkiye uses Type C/F sockets, 230V).</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="box">
+      <h3>On-Site Contacts</h3>
+      <table>
+        <tr><th>Role</th><th>Name</th><th>Contact</th></tr>
+        <tr><td>CDC Foundation Logistics Lead</td><td>[Name]</td><td>[email / phone]</td></tr>
+        <tr><td>Venue Coordinator (Sheraton Istanbul City Center)</td><td>[Name]</td><td>[email / phone]</td></tr>
+        <tr><td>Emergency Contact</td><td>[Name]</td><td>[email / phone]</td></tr>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<script>
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+    window.scrollTo(0,0);
+  });
+});
+</script>
+
+</body>
+</html>
