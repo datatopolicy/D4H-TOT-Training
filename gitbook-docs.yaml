@@ -3,10 +3,3 @@ root: ./
 structure:
   readme: README.md
   summary: SUMMARY.md
-
-redirects:
-  overview: docs/01-overview.md
-  agenda: docs/02-agenda.md
-  facilitators: docs/03-facilitators.md
-  materials: docs/04-materials.md
-  logistics: docs/05-logistics.md
